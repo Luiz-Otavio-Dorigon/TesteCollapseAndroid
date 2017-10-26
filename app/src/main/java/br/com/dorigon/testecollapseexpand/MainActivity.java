@@ -8,6 +8,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.Transformation;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
@@ -18,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout mLayoutTop, mLayoutBottom;
     private RecyclerView mRecyclerView;
 
+    private int offset = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-
+                Log.i("dy",dy+"");
                 collapse(dy);
 
             }
@@ -44,17 +48,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void collapse(int y) {
         if (y > 0) {
-            if (!mLayoutBottom.isShown()) {
-                mLayoutTop.setVisibility(View.GONE);
-                mLayoutBottom.setVisibility(View.VISIBLE);
-                mRecyclerView.setPadding(0, 0, 0, dpToPx(80));
-            }
-        } else {
-            if (!mLayoutTop.isShown()) {
-                mLayoutTop.setVisibility(View.VISIBLE);
-                mLayoutBottom.setVisibility(View.GONE);
-                mRecyclerView.setPadding(0, dpToPx(80), 0, 0);
-            }
+            expand(mLayoutBottom,y);
+            collapse(mLayoutTop,y);
+        } else if (y < 0){
+            collapse(mLayoutBottom,y*-1);
+            expand(mLayoutTop,y*-1);
         }
     }
 
@@ -66,7 +64,30 @@ public class MainActivity extends AppCompatActivity {
         return names;
     }
 
-    public int dpToPx(int px) {
+    public static  int dpToPx(int px) {
         return (int) (px * Resources.getSystem().getDisplayMetrics().density);
+    }
+
+    public static void expand(final View v,int y) {
+        final int targetHeight = dpToPx(80);
+        if (v.getLayoutParams().height < targetHeight){
+            if (v.getLayoutParams().height + y > targetHeight)
+                v.getLayoutParams().height = targetHeight;
+            else{
+                v.getLayoutParams().height += y;
+            }
+            v.requestLayout();
+        }
+    }
+
+    public static void collapse(final View v,int y) {
+        if (v.getLayoutParams().height > 0){
+            if (v.getLayoutParams().height - y < 0)
+                v.getLayoutParams().height = 0;
+            else{
+                v.getLayoutParams().height -= y;
+            }
+            v.requestLayout();
+        }
     }
 }
