@@ -1,12 +1,10 @@
 package br.com.dorigon.testecollapseexpand;
 
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -34,14 +32,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                Log.i("dy", dy + "");
-                collapse(dy);
+                collapseExpand(dy);
 
             }
         });
     }
 
-    private void collapse(int y) {
+    private void collapseExpand(int y) {
         if (y > 0) {
             expand(mLayoutBottom, y);
             collapse(mLayoutTop, y);
@@ -53,18 +50,14 @@ public class MainActivity extends AppCompatActivity {
 
     private List<String> getNames() {
         List<String> names = new ArrayList<>();
-        for (int i = 0; i < 40; i++) {
+        for (int i = 0; i <= 40; i++) {
             names.add("My name is " + i);
         }
         return names;
     }
 
-    public static int dpToPx(int px) {
-        return (int) (px * Resources.getSystem().getDisplayMetrics().density);
-    }
-
     public static void expand(final View v, int y) {
-        final int targetHeight = dpToPx(80);
+        final int targetHeight = Utils.dpToPx(80);
         if (v.getLayoutParams().height < targetHeight) {
             if (v.getLayoutParams().height + y > targetHeight) {
                 v.getLayoutParams().height = targetHeight;
